@@ -31,6 +31,37 @@
 * [Personas-Desarrolladores del Proyecto](#personas-desarrolladores)  
 
 * [Licencia](#licencia)
+
+
+## DESCRIPCIÓN DEL PROYECTO 
+
+Este proyecto está orientado a explorar y entender el funcionamiento básico de YouTube, una plataforma en línea que permite a los usuarios subir, ver, compartir y comentar videos. El sistema permite gestionar contenido multimedia, facilitando la publicación de videos para una audiencia global, así como la interacción entre creadores y espectadores.
+
+## ESTADO DEL PROYECTO
+
+<h4 align="center">
+:construction: Proyecto en constante construcción :construction:
+</h4>
   
+## DEMOSTRACIÓN DE FUCIONES Y APLICACAIONES
+
+- `Funcionalidad 1`: Ver videos
+- `Funcionalidad 2`: Subir videos
+- `Funcionalidad 3`: Comentar videos
+- `Funcionalidad 4`: Compartir y valorar videos
+
+<img width="479.5" height="241.5" alt="git" src="https://github.com/user-attachments/assets/569e3f78-f125-4894-a6e2-fa5979a95daa" />
+
+## ACCESO AL PROYECTO
+ Puedes acceder al proyecto a traves de este link: https://www.youtube.com/?app=desktop&hl=es
+
+## TECNOLOGÍAS UTILIZADAS
+
+* Java
+* Python 
+* C++
+* HTML5
+
+## PERSONAS CONTRIBUYENTES
 
 
