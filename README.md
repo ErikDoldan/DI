@@ -64,4 +64,15 @@ Este proyecto está orientado a explorar y entender el funcionamiento básico de
 
 ## PERSONAS CONTRIBUYENTES
 
+*  [Chad Hurley](https://en.wikipedia.org/wiki/Chad_Hurley) – Cofundador, diseño y visión.  
+*  [Steve Chen](https://en.wikipedia.org/wiki/Steve_Chen) – Cofundador, desarrollo e ingeniería.  
+*  [Jawed Karim](https://en.wikipedia.org/wiki/Jawed_Karim) – Cofundador, primer creador en la plataforma.  
 
+## PERSONAS DESARROLLADORAS DEL PROYECTO
+
+* [Chad Hurley](https://en.wikipedia.org/wiki/Chad_Hurley) – Diseño y dirección del producto.  
+* [Steve Chen](https://en.wikipedia.org/wiki/Steve_Chen) – Ingeniería y desarrollo inicial.  
+* [Jawed Karim](https://en.wikipedia.org/wiki/Jawed_Karim) – Ideación y primer creador en la plataforma.  
+* Equipo temprano de ingenieros ex-PayPal – Contribuyeron al backend y escalabilidad del sistema.  
+
+## LICENCIA 
