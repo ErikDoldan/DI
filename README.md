@@ -76,3 +76,4 @@ Este proyecto está orientado a explorar y entender el funcionamiento básico de
 * Equipo temprano de ingenieros ex-PayPal – Contribuyeron al backend y escalabilidad del sistema.  
 
 ## LICENCIA 
+Este proyecto está bajo la licencia MIT 
