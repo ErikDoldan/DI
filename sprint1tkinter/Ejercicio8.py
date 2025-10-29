@@ -17,7 +17,6 @@ frame_superior.pack()
 
 tk.Label(frame_superior, text="Etiqueta 1").grid(row=0, column=0)
 tk.Label(frame_superior, text="Etiqueta 2").grid(row=1, column=0)
-
 entry = tk.Entry(frame_superior)
 entry.grid(row=2, column=0)
 
