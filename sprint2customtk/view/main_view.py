@@ -1,7 +1,55 @@
 import customtkinter as ctk
+import tkinter as tk
+
+
+class AddUserView:
+    def __init__(self, master):
+        self.window = ctk.CTkToplevel(master)
+        self.window.title("Añadir Nuevo Usuario")
+        self.window.geometry("300x400")
+        self.window.grab_set()
+        self.window.resizable(False, False)
+
+        self.window.grid_columnconfigure(0, weight=1)
+
+        ctk.CTkLabel(self.window, text="Nombre:").grid(row=0, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.nombre_entry = ctk.CTkEntry(self.window, placeholder_text="Ej: Juan Pérez")
+        self.nombre_entry.grid(row=1, column=0, padx=20, pady=(0, 10), sticky="ew")
+
+        ctk.CTkLabel(self.window, text="Edad:").grid(row=2, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.edad_entry = ctk.CTkEntry(self.window, placeholder_text="Ej: 30")
+        self.edad_entry.grid(row=3, column=0, padx=20, pady=(0, 10), sticky="ew")
+
+        ctk.CTkLabel(self.window, text="Género:").grid(row=4, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.genero_combobox = ctk.CTkComboBox(self.window, values=["Masculino", "Femenino", "Otro"])
+        self.genero_combobox.set("Masculino")
+        self.genero_combobox.grid(row=5, column=0, padx=20, pady=(0, 10), sticky="ew")
+
+        ctk.CTkLabel(self.window, text="Avatar (ej: avatar1.png):").grid(row=6, column=0, padx=20, pady=(10, 0),
+                                                                         sticky="w")
+        self.avatar_entry = ctk.CTkEntry(self.window, placeholder_text="avatar1.png")
+        self.avatar_entry.grid(row=7, column=0, padx=20, pady=(0, 10), sticky="ew")
+
+        self.guardar_button = ctk.CTkButton(self.window, text="Guardar Usuario", fg_color="green")
+        self.guardar_button.grid(row=8, column=0, padx=20, pady=20, sticky="ew")
+
+        cancelar_button = ctk.CTkButton(self.window, text="Cancelar", command=self.window.destroy, fg_color="gray")
+        cancelar_button.grid(row=9, column=0, padx=20, pady=(0, 10), sticky="ew")
+
+    def get_data(self):
+        return {
+            'nombre': self.nombre_entry.get().strip(),
+            'edad': self.edad_entry.get().strip(),
+            'genero': self.genero_combobox.get(),
+            'avatar': self.avatar_entry.get().strip()
+        }
+
+
 class MainView:
     def __init__(self, master):
-        self.master = master  # Ventana principal (ctk.CTk)
+        self.master = master
+
+        self.crear_barra_menu()
 
         master.grid_columnconfigure(0, weight=1)
         master.grid_columnconfigure(1, weight=3)
@@ -11,6 +59,9 @@ class MainView:
         self.lista_usuarios_frame.grid(row=0, column=0, sticky="nsew")
         self.lista_usuarios_frame.grid_columnconfigure(0, weight=1)
 
+        self.add_button = ctk.CTkButton(self.lista_usuarios_frame, text="➕ Añadir Usuario", fg_color="blue")
+        self.add_button.pack(fill="x", padx=10, pady=(10, 5))
+
         ctk.CTkLabel(self.lista_usuarios_frame, text="👥 Usuarios Registrados", font=ctk.CTkFont(weight="bold")).pack(
             pady=10)
 
@@ -18,6 +69,9 @@ class MainView:
                                                                 label_text="Lista de Usuarios")
         self.lista_usuarios_scrollable.pack(fill="both", expand=True, padx=10, pady=(0, 10))
         self.lista_usuarios_scrollable.columnconfigure(0, weight=1)
+
+        self.exit_button = ctk.CTkButton(self.lista_usuarios_frame, text="❌ Salir de la aplicación", fg_color="red")
+        self.exit_button.pack(fill="x", padx=10, pady=(0, 10))
 
         self.detalles_frame = ctk.CTkFrame(master, corner_radius=0)
         self.detalles_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
@@ -39,9 +93,26 @@ class MainView:
         self.genero_label = ctk.CTkLabel(self.detalles_frame, text="Género: -")
         self.genero_label.grid(row=5, column=0, sticky="w", padx=20, pady=5)
 
+    def crear_barra_menu(self):
+        self.menubar = tk.Menu(self.master)
+        self.master.config(menu=self.menubar)
+
+        self.menu_archivo = tk.Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Archivo", menu=self.menu_archivo)
+
+        self.menu_archivo.add_command(label="Cargar usuarios (CSV)", command=lambda: None)
+        self.menu_archivo.add_command(label="Guardar usuarios (CSV)", command=lambda: None)
+        self.menu_archivo.add_separator()
+        self.menu_archivo.add_command(label="Salir", command=self.master.quit)
+
+    def configurar_comandos_menu(self, cargar_callback, guardar_callback):
+        self.menu_archivo.entryconfig(0, command=cargar_callback)
+        self.menu_archivo.entryconfig(1, command=guardar_callback)
+
     def actualizar_lista_usuarios(self, usuarios, on_seleccionar_callback):
         for widget in self.lista_usuarios_scrollable.winfo_children():
             widget.destroy()
+
         for i, usuario in enumerate(usuarios):
             btn = ctk.CTkButton(
                 self.lista_usuarios_scrollable,
@@ -53,15 +124,18 @@ class MainView:
             )
             btn.pack(fill="x", padx=5, pady=2)
 
-    def mostrar_detalles_usuario(self, usuario):
+    def mostrar_detalles_usuario(self, usuario, ctk_image=None):
         if usuario:
             self.nombre_label.configure(text=f"Nombre: {usuario.nombre}")
             self.edad_label.configure(text=f"Edad: {usuario.edad} años")
             self.genero_label.configure(text=f"Género: {usuario.genero}")
 
-            self.avatar_label.configure(text=f"Avatar: {usuario.avatar}")
+            if ctk_image:
+                self.avatar_label.configure(image=ctk_image, text="")
+            else:
+                self.avatar_label.configure(image=None, text="Sin Avatar")
         else:
             self.nombre_label.configure(text="Nombre: -")
             self.edad_label.configure(text="Edad: -")
             self.genero_label.configure(text="Género: -")
-            self.avatar_label.configure(text="Seleccione un usuario")
+            self.avatar_label.configure(image=None, text="Seleccione un usuario")
