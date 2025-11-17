@@ -45,6 +45,22 @@ class AddUserView:
         }
 
 
+class EditUserView(AddUserView):
+    def __init__(self, master, usuario):
+        super().__init__(master)
+        self.window.title("Editar Usuario: " + usuario.nombre)
+        self.guardar_button.configure(text="Aplicar Cambios", fg_color="darkblue")
+
+        self.nombre_entry.delete(0, 'end')
+        self.edad_entry.delete(0, 'end')
+        self.avatar_entry.delete(0, 'end')
+
+        self.nombre_entry.insert(0, usuario.nombre)
+        self.edad_entry.insert(0, str(usuario.edad))
+        self.genero_combobox.set(usuario.genero)
+        self.avatar_entry.insert(0, usuario.avatar)
+
+
 class MainView:
     def __init__(self, master):
         self.master = master
@@ -54,6 +70,7 @@ class MainView:
         master.grid_columnconfigure(0, weight=1)
         master.grid_columnconfigure(1, weight=3)
         master.grid_rowconfigure(0, weight=1)
+        master.grid_rowconfigure(1, weight=0)
 
         self.lista_usuarios_frame = ctk.CTkFrame(master, corner_radius=0)
         self.lista_usuarios_frame.grid(row=0, column=0, sticky="nsew")
@@ -61,6 +78,10 @@ class MainView:
 
         self.add_button = ctk.CTkButton(self.lista_usuarios_frame, text="➕ Añadir Usuario", fg_color="blue")
         self.add_button.pack(fill="x", padx=10, pady=(10, 5))
+
+        self.search_bar = ctk.CTkEntry(self.lista_usuarios_frame,
+                                       placeholder_text="🔍 Buscar por nombre, edad o género...")
+        self.search_bar.pack(fill="x", padx=10, pady=(5, 10))
 
         ctk.CTkLabel(self.lista_usuarios_frame, text="👥 Usuarios Registrados", font=ctk.CTkFont(weight="bold")).pack(
             pady=10)
@@ -76,22 +97,35 @@ class MainView:
         self.detalles_frame = ctk.CTkFrame(master, corner_radius=0)
         self.detalles_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
         self.detalles_frame.columnconfigure(0, weight=1)
+        self.detalles_frame.columnconfigure(1, weight=1)
         self.detalles_frame.rowconfigure(2, weight=1)
 
         ctk.CTkLabel(self.detalles_frame, text="📋 Detalles del Usuario", font=ctk.CTkFont(size=18, weight="bold")).grid(
-            row=0, column=0, pady=10, sticky="ew")
+            row=0, column=0, pady=10, sticky="ew", columnspan=2)
 
         self.avatar_label = ctk.CTkLabel(self.detalles_frame, text="Avatar", width=200, height=200, corner_radius=5)
-        self.avatar_label.grid(row=1, column=0, pady=10)
+        self.avatar_label.grid(row=1, column=0, pady=10, columnspan=2)
 
         self.nombre_label = ctk.CTkLabel(self.detalles_frame, text="Nombre: -")
-        self.nombre_label.grid(row=3, column=0, sticky="w", padx=20, pady=5)
+        self.nombre_label.grid(row=3, column=0, sticky="w", padx=20, pady=5, columnspan=2)
 
         self.edad_label = ctk.CTkLabel(self.detalles_frame, text="Edad: -")
-        self.edad_label.grid(row=4, column=0, sticky="w", padx=20, pady=5)
+        self.edad_label.grid(row=4, column=0, sticky="w", padx=20, pady=5, columnspan=2)
 
         self.genero_label = ctk.CTkLabel(self.detalles_frame, text="Género: -")
-        self.genero_label.grid(row=5, column=0, sticky="w", padx=20, pady=5)
+        self.genero_label.grid(row=5, column=0, sticky="w", padx=20, pady=5, columnspan=2)
+
+        self.edit_button = ctk.CTkButton(self.detalles_frame, text="✏️ Editar", fg_color="orange", state="disabled")
+        self.edit_button.grid(row=6, column=0, padx=10, pady=20, sticky="ew")
+
+        self.delete_button = ctk.CTkButton(self.detalles_frame, text="🗑️ Eliminar", fg_color="darkred",
+                                           state="disabled")
+        self.delete_button.grid(row=6, column=1, padx=10, pady=20, sticky="ew")
+
+        self.usuario_seleccionado = None
+
+        self.status_bar = ctk.CTkLabel(master, text="Listo.", fg_color="gray", corner_radius=0, padx=10)
+        self.status_bar.grid(row=1, column=0, columnspan=2, sticky="ew")
 
     def crear_barra_menu(self):
         self.menubar = tk.Menu(self.master)
@@ -109,6 +143,10 @@ class MainView:
         self.menu_archivo.entryconfig(0, command=cargar_callback)
         self.menu_archivo.entryconfig(1, command=guardar_callback)
 
+    def configurar_comandos_acciones(self, editar_callback, eliminar_callback):
+        self.edit_button.configure(command=editar_callback)
+        self.delete_button.configure(command=eliminar_callback)
+
     def actualizar_lista_usuarios(self, usuarios, on_seleccionar_callback):
         for widget in self.lista_usuarios_scrollable.winfo_children():
             widget.destroy()
@@ -124,7 +162,12 @@ class MainView:
             )
             btn.pack(fill="x", padx=5, pady=2)
 
+    def set_status_bar(self, texto):
+        self.status_bar.configure(text=texto)
+
     def mostrar_detalles_usuario(self, usuario, ctk_image=None):
+        self.usuario_seleccionado = usuario
+
         if usuario:
             self.nombre_label.configure(text=f"Nombre: {usuario.nombre}")
             self.edad_label.configure(text=f"Edad: {usuario.edad} años")
@@ -134,8 +177,15 @@ class MainView:
                 self.avatar_label.configure(image=ctk_image, text="")
             else:
                 self.avatar_label.configure(image=None, text="Sin Avatar")
+
+            self.edit_button.configure(state="normal")
+            self.delete_button.configure(state="normal")
+
         else:
             self.nombre_label.configure(text="Nombre: -")
             self.edad_label.configure(text="Edad: -")
             self.genero_label.configure(text="Género: -")
             self.avatar_label.configure(image=None, text="Seleccione un usuario")
+
+            self.edit_button.configure(state="disabled")
+            self.delete_button.configure(state="disabled")

@@ -86,3 +86,29 @@ class GestorUsuarios:
 
     def agregar(self, usuario):
         self._usuarios.append(usuario)
+
+    def actualizar(self, indice: int, datos_actualizados: Usuario):
+        if 0 <= indice < len(self._usuarios):
+            self._usuarios[indice] = datos_actualizados
+            return True
+        return False
+
+    def eliminar(self, indice: int):
+        if 0 <= indice < len(self._usuarios):
+            del self._usuarios[indice]
+            if self._usuario_seleccionado_indice == indice:
+                self._usuario_seleccionado_indice = None
+            elif self._usuario_seleccionado_indice is not None and self._usuario_seleccionado_indice > indice:
+                self._usuario_seleccionado_indice -= 1
+            return True
+        return False
+
+    def buscar_usuarios(self, filtro: str):
+        if not filtro:
+            return self._usuarios
+
+        filtro = filtro.lower()
+        return [
+            u for u in self._usuarios
+            if filtro in u.nombre.lower() or filtro in u.genero.lower() or filtro in str(u.edad)
+        ]
