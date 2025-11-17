@@ -25,10 +25,10 @@ class AddUserView:
         self.genero_combobox.set("Masculino")
         self.genero_combobox.grid(row=5, column=0, padx=20, pady=(0, 10), sticky="ew")
 
-        ctk.CTkLabel(self.window, text="Avatar (ej: avatar1.png):").grid(row=6, column=0, padx=20, pady=(10, 0),
-                                                                         sticky="w")
-        self.avatar_entry = ctk.CTkEntry(self.window, placeholder_text="avatar1.png")
-        self.avatar_entry.grid(row=7, column=0, padx=20, pady=(0, 10), sticky="ew")
+        ctk.CTkLabel(self.window, text="Avatar:").grid(row=6, column=0, padx=20, pady=(10, 0), sticky="w")
+        self.avatar_combobox = ctk.CTkComboBox(self.window, values=["avatar1.png", "avatar2.png"])
+        self.avatar_combobox.set("avatar1.png")
+        self.avatar_combobox.grid(row=7, column=0, padx=20, pady=(0, 10), sticky="ew")
 
         self.guardar_button = ctk.CTkButton(self.window, text="Guardar Usuario", fg_color="green")
         self.guardar_button.grid(row=8, column=0, padx=20, pady=20, sticky="ew")
@@ -41,7 +41,7 @@ class AddUserView:
             'nombre': self.nombre_entry.get().strip(),
             'edad': self.edad_entry.get().strip(),
             'genero': self.genero_combobox.get(),
-            'avatar': self.avatar_entry.get().strip()
+            'avatar': self.avatar_combobox.get()
         }
 
 
@@ -53,12 +53,11 @@ class EditUserView(AddUserView):
 
         self.nombre_entry.delete(0, 'end')
         self.edad_entry.delete(0, 'end')
-        self.avatar_entry.delete(0, 'end')
 
         self.nombre_entry.insert(0, usuario.nombre)
         self.edad_entry.insert(0, str(usuario.edad))
         self.genero_combobox.set(usuario.genero)
-        self.avatar_entry.insert(0, usuario.avatar)
+        self.avatar_combobox.set(usuario.avatar)
 
 
 class MainView:
@@ -137,11 +136,25 @@ class MainView:
         self.menu_archivo.add_command(label="Cargar usuarios (CSV)", command=lambda: None)
         self.menu_archivo.add_command(label="Guardar usuarios (CSV)", command=lambda: None)
         self.menu_archivo.add_separator()
+        self.menu_archivo.add_command(label="Activar Auto-Guardado", command=lambda: None)
+        self.menu_archivo.add_separator()
         self.menu_archivo.add_command(label="Salir", command=self.master.quit)
 
-    def configurar_comandos_menu(self, cargar_callback, guardar_callback):
+        self.menu_ayuda = tk.Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Ayuda", menu=self.menu_ayuda)
+        self.menu_ayuda.add_command(label="Acerca de", command=lambda: None)
+
+    def configurar_comandos_menu(self, cargar_callback, guardar_callback, toggle_auto_save_callback,
+                                 acerca_de_callback):
         self.menu_archivo.entryconfig(0, command=cargar_callback)
         self.menu_archivo.entryconfig(1, command=guardar_callback)
+        self.menu_archivo.entryconfig(3, command=toggle_auto_save_callback)
+
+        self.menu_ayuda.entryconfig(0, command=acerca_de_callback)
+
+    def set_auto_save_menu_state(self, is_active: bool):
+        label = "Desactivar Auto-Guardado" if is_active else "Activar Auto-Guardado"
+        self.menu_archivo.entryconfig(3, label=label)
 
     def configurar_comandos_acciones(self, editar_callback, eliminar_callback):
         self.edit_button.configure(command=editar_callback)

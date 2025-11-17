@@ -15,6 +15,7 @@ class AppController:
         self.CSV_PATH = self.BASE_DIR / "usuarios.csv"
         self.avatar_images = {}
         self.filtro_actual = ""
+        self.auto_guardado_activo = True
 
         self.modelo = GestorUsuarios(self.CSV_PATH)
         self.view = MainView(master)
@@ -24,8 +25,12 @@ class AppController:
 
         self.view.configurar_comandos_menu(
             cargar_callback=self.cargar_datos,
-            guardar_callback=self.guardar_datos
+            guardar_callback=self.guardar_datos,
+            toggle_auto_save_callback=self.toggle_auto_guardado,
+            acerca_de_callback=self.mostrar_acerca_de
         )
+        self.view.set_auto_save_menu_state(self.auto_guardado_activo)
+
         self.view.configurar_comandos_acciones(
             editar_callback=self.abrir_ventana_editar,
             eliminar_callback=self.eliminar_usuario
@@ -37,6 +42,33 @@ class AppController:
 
         if self.modelo.listar():
             self.seleccionar_usuario(0)
+
+        self.iniciar_auto_guardado()
+
+    def iniciar_auto_guardado(self):
+        self.auto_guardar()
+
+    def auto_guardar(self):
+        if self.auto_guardado_activo:
+            try:
+                self.modelo.guardar_csv()
+                self.view.set_status_bar("Estado: Auto-guardado exitoso. (Próximo en 10s)")
+            except Exception:
+                self.view.set_status_bar("Advertencia: Error durante el auto-guardado.")
+
+        self.master.after(10000, self.auto_guardar)
+
+    def toggle_auto_guardado(self):
+        self.auto_guardado_activo = not self.auto_guardado_activo
+        self.view.set_auto_save_menu_state(self.auto_guardado_activo)
+        state_text = "activado" if self.auto_guardado_activo else "desactivado"
+        self.view.set_status_bar(f"Estado: Auto-Guardado {state_text}.")
+
+    def mostrar_acerca_de(self):
+        messagebox.showinfo(
+            "Acerca de",
+            "Registro de Usuarios con CustomTkinter y MVC\n\nPráctica Guiada - Versión Final"
+        )
 
     def cargar_datos(self):
         try:
@@ -127,7 +159,7 @@ class AppController:
 
         nombre = data['nombre']
         edad_str = data['edad']
-        avatar = data['avatar'] or "avatar1.png"
+        avatar = data['avatar']  # Ahora viene del combobox
 
         if not nombre:
             messagebox.showwarning("Error de Validación", "El nombre no puede estar vacío.")
@@ -178,7 +210,7 @@ class AppController:
 
         nombre = data['nombre']
         edad_str = data['edad']
-        avatar = data['avatar'] or "avatar1.png"
+        avatar = data['avatar']  # Ahora viene del combobox
 
         if not nombre:
             messagebox.showwarning("Error de Validación", "El nombre no puede estar vacío.")
