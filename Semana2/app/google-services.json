@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "446724941643",
+    "project_id": "trimestre-32aa3",
+    "storage_bucket": "trimestre-32aa3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446724941643:android:d72d1cc95140415e05eace",
+        "android_client_info": {
+          "package_name": "com.example.aulamas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJ9aWxKMO7tr79BqQJ9Cghoy9_nCNk-xc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
